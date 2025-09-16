@@ -10,6 +10,7 @@ abstract class User <Entity> <<abstract>> {
     password: Password <<nn, encrypted>>
     phoneNumber: PhoneNumber <<Nullable>>
     creationTS: ZonedDateTime
+    credit: Integer
 }
 
 class PhoneNumber <Value Object> <<Embeddable>> {
@@ -19,7 +20,6 @@ class PhoneNumber <Value Object> <<Embeddable>> {
 
 entity Customer <Entity> extends User{
     paymentInformation : PaymentInformation <<nn>>
-    credit: Integer
 }
 
 entity Bet <Entity> {
@@ -28,20 +28,23 @@ entity Bet <Entity> {
     type : String
     amount : Integer <<max: 1000 Euro>>
     placedDate: ZonedDateTime
+    expectedWinner: Bettable
 }
 
-' TODO:
-' Maybe add functionality for more than 1v1s
-
 entity Match <Entity> {
-    sport : Sport
-    team1 : Bettable <<nn>>
-    team2 : Bettable <<nn>>
-    quoteTeam1 : Float
-    quoteTeam2 : Float
+    sport : Sport <<has to be supported by Arena>>
+    teams : List<Bettable> <<length bigger 2, nn>>
+    stats : List<Stat> <<nn, length = teams.length>>
     date : ZonedDateTime
-    winner : String
+    winner : Bettable
     arena: Arena <<nn>>
+}
+
+class Stat <Value Object> <<Embeddable>> {
+    for: Bettable <<nn>>
+    in: Match <<nn>>
+    quote: Float <<nn, bigger 1.0>>
+    score: Float <<nn>>
 }
 
 entity Arena <Entity> {
@@ -62,7 +65,6 @@ abstract class Bettable <Entity> <<abstract>> {
 }
 
 class WLRatio <Value Object> <<Embeddable>> {
-    bettable: Bettable
     ratio: Float <<0.0 - 1.0>>
     sport: Sport
 }
@@ -97,17 +99,21 @@ enum Sport <Enum> {
     BOXING,
     MMA,
     TENNIS,
+    CHESS,
+    GOLF
     ...
 }
+
+'!include rich_types.puml
 
 Bet "1" --* "0..n" Customer
 Customer "1..n" --> "1" PaymentInformation
 PaymentInformation "1" -left> "0..n" Country
 PhoneNumber "1" --> "0..n" Country
-Bet "1" --> "0..n" Match
-Match "2" -* "0..n" Bettable
+Bet "1" --* "0..n" Match
+Match "2" -> "0..n" Bettable
 WLRatio "1" --* "0..n" Bettable
-Match "1" -* "0..n" Arena
+Match "1" -> "0..n" Arena
 Arena "1" *-- "1" Location
 Team "1..n" --> Sport
 Athlete "1..n" --> Sport
@@ -115,5 +121,6 @@ Match "1" --> Sport
 Arena "1..n" -> Sport
 User "0..1" --> "1" PhoneNumber
 Athlete "0..1" -o "2..n" Team
+Stat "1" --> "1..n" Match
 
 @enduml
