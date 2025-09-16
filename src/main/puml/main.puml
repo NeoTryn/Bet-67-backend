@@ -35,18 +35,20 @@ entity Bet <Entity> {
 
 entity Match <Entity> {
     sport : Sport
-    team1 : Bettable
-    team2 : Bettable
+    team1 : Bettable <<nn>>
+    team2 : Bettable <<nn>>
     quoteTeam1 : Float
     quoteTeam2 : Float
     date : ZonedDateTime
     winner : String
-    arena: Arena
+    arena: Arena <<nn>>
 }
 
-class Arena <Value Object> <<Embeddable>> {
+entity Arena <Entity> {
+    name: String
     type: ArenaType
     location: Location
+    possibleSports: List<Sport>
 }
 
 class Location <Value Object> <<Embeddable>> {
@@ -56,8 +58,6 @@ class Location <Value Object> <<Embeddable>> {
 
 abstract class Bettable <Entity> <<abstract>> {
     name: String
-    completedMatches: List<Match>
-    winLoseRatio: List<WLRatio>
     nextMatchDate: ZonedDateTime
 }
 
@@ -100,15 +100,18 @@ enum Sport <Enum> {
     ...
 }
 
-Bet "1" -> "0..n" Customer
+Bet "1" -* "0..n" Customer
 Customer "1..n" --> "1" PaymentInformation
 PaymentInformation "1" -> "0..n" Country
 PhoneNumber "1" --> "0..n" Country
 Bet "1" --> "0..n" Match
-Match "1" -> "0..n" Sport
-Match "2" --> "0..n" Bettable
-WLRatio "1" --> "0..n" Bettable
-Match "1" --> "0..n" Arena
-Arena "1" --> "1..n" Location
+Match "2" --* "0..n" Bettable
+WLRatio "1" --* "0..n" Bettable
+Match "1" --* "0..n" Arena
+Arena "1" *-- "1" Location
+Team "1..n" --> Sport
+Athlete "1..n" --> Sport
+Match "1" --> Sport
+Arena "1..n" -> Sport
 
 @enduml
