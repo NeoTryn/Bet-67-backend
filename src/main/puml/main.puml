@@ -100,15 +100,15 @@ enum Sport <Enum> {
     ...
 }
 
-Bet -> Customer
-Customer --> PaymentInformation
-PaymentInformation -> Country
-PhoneNumber --> Country
-Bet --> Match
-Match -> Sport
-Match --> Bettable
-WLRatio --> Bettable
-Match --> Arena
-Arena --> Location
+Bet "1" -> "0..n" Customer
+Customer "1..n" --> "1" PaymentInformation
+PaymentInformation "1" -> "0..n" Country
+PhoneNumber "1" --> "0..n" Country
+Bet "1" --> "0..n" Match
+Match "1" -> "0..n" Sport
+Match "2" --> "0..n" Bettable
+WLRatio "1" --> "0..n" Bettable
+Match "1" --> "0..n" Arena
+Arena "1" --> "1..n" Location
 
 @enduml
