@@ -1,0 +1,114 @@
+@startuml
+
+title Bet-67 Backend
+
+abstract class User <Entity> <<abstract>> {
+    userName : UserName
+    firstName : FirstName
+    lastName : LastName
+    email : Email
+    password: Password <<nn, encrypted>>
+    phoneNumber: PhoneNumber <<Nullable>>
+    creationTS: ZonedDateTime
+}
+
+class PhoneNumber <Value Object> <<Embeddable>> {
+    reportedCountry: Country
+    number: Integer
+}
+
+entity Customer <Entity> extends User{
+    paymentInformation : PaymentInformation <<nn>>
+    credit: Integer
+}
+
+entity Bet <Entity> {
+    placedOn : Match
+    placer : Customer
+    type : String
+    amount : Integer <<max: 1000 Euro>>
+    placedDate: ZonedDateTime
+}
+
+' TODO:
+' Maybe add functionality for more than 1v1s
+
+entity Match <Entity> {
+    sport : Sport
+    team1 : Bettable
+    team2 : Bettable
+    quoteTeam1 : Float
+    quoteTeam2 : Float
+    date : ZonedDateTime
+    winner : String
+    arena: Arena
+}
+
+class Arena <Value Object> <<Embeddable>> {
+    type: ArenaType
+    location: Location
+}
+
+class Location <Value Object> <<Embeddable>> {
+    longitude: Longitude
+    latitude: Latitude
+}
+
+abstract class Bettable <Entity> <<abstract>> {
+    name: String
+    completedMatches: List<Match>
+    winLoseRatio: List<WLRatio>
+    nextMatchDate: ZonedDateTime
+}
+
+class WLRatio <Value Object> <<Embeddable>> {
+    bettable: Bettable
+    ratio: Float <<0.0 - 1.0>>
+    sport: Sport
+}
+
+entity Team <Entity> extends Bettable{
+    sports: List<Sport>
+}
+
+entity Athlete <Entity> extends Bettable{
+    mainSport: Sport
+    additionalSports: List<Sport> <<Nullable>>
+    team: Team <<Nullable>>
+}
+
+class PaymentInformation <Value Object>  <<Embeddable>> {
+    cardNumber : String
+    iban : Iban
+    reportedCountry : Country
+    expirationDate : ZonedDateTime
+}
+
+entity Country <Entity> {
+    countryName : String
+    iso2Code : String
+    iso3Code : String
+    countryCode : Integer
+}
+
+enum Sport <Enum> {
+    FOOTBALL,
+    BASKETBALL,
+    BOXING,
+    MMA,
+    TENNIS,
+    ...
+}
+
+Bet -> Customer
+Customer --> PaymentInformation
+PaymentInformation -> Country
+PhoneNumber --> Country
+Bet --> Match
+Match -> Sport
+Match --> Bettable
+WLRatio --> Bettable
+Match --> Arena
+Arena --> Location
+
+@enduml

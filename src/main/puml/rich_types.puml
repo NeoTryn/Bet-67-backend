@@ -1,0 +1,44 @@
+@startuml
+
+class UserName <Rich Type> {
+    value: String
+}
+
+class FirstName <Rich Type> {
+    value: String
+}
+
+class LastName <Rich Type> {
+    value: String
+}
+
+class Email <Rich Type> {
+    value: String
+}
+
+class Password <Rich Type> {
+    value: String
+}
+
+class ArenaType <Rich Type> {
+    value: String
+}
+
+class Longitude <Rich Type> {
+    value: String
+}
+
+class Latitude <Rich Type> {
+    value: String
+}
+
+User --> UserName
+User --> FirstName
+User --> LastName
+User --> Email
+User --> Password
+Arena --> ArenaType
+Location --> Longitude
+Location --> Latitude
+
+@enduml
