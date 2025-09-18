@@ -45,6 +45,7 @@ class Stat <Value Object> <<Embeddable>> {
     in: Match <<nn>>
     quote: Float <<nn, bigger 1.0>>
     score: Float <<nn>>
+    wlRatio: Float
 }
 
 entity Arena <Entity> {
@@ -62,11 +63,6 @@ class Location <Value Object> <<Embeddable>> {
 abstract class Bettable <Entity> <<abstract>> {
     name: String
     nextMatchDate: ZonedDateTime
-}
-
-class WLRatio <Value Object> <<Embeddable>> {
-    ratio: Float <<0.0 - 1.0>>
-    sport: Sport
 }
 
 entity Team <Entity> extends Bettable{
@@ -107,12 +103,11 @@ enum Sport <Enum> {
 '!include rich_types.puml
 
 Bet "1" --* "0..n" Customer
-Customer "1..n" --> "1" PaymentInformation
+Customer "1..n" *-- "1" PaymentInformation
 PaymentInformation "1" -left> "0..n" Country
 PhoneNumber "1" --> "0..n" Country
 Bet "1" --* "0..n" Match
 Match "2" -> "0..n" Bettable
-WLRatio "1" --* "0..n" Bettable
 Match "1" -> "0..n" Arena
 Arena "1" *-- "1" Location
 Team "1..n" --> Sport
@@ -121,6 +116,7 @@ Match "1" --> Sport
 Arena "1..n" -> Sport
 User "0..1" --> "1" PhoneNumber
 Athlete "0..1" -o "2..n" Team
-Stat "1" --> "1..n" Match
+Stat "1" --* "1..n" Match
+Stat "1" --> "1" Bettable
 
 @enduml
