@@ -1,5 +1,10 @@
 @startuml
 
+title Bet67 Rich Types
+
+hide empty attributes
+hide empty methods
+
 class UserName <Rich Type> {
     value: String
 }
