@@ -2,6 +2,9 @@
 
 title Bet-67 Backend
 
+hide empty attributes
+hide empty methods
+
 abstract class User <Entity> <<abstract>> {
     userName : UserName
     firstName : FirstName
@@ -45,7 +48,6 @@ class Stat <Value Object> <<Embeddable>> {
     in: Match <<nn>>
     quote: Float <<nn, bigger 1.0>>
     score: Float <<nn>>
-    wlRatio: Float
 }
 
 entity Arena <Entity> {
@@ -100,6 +102,32 @@ enum Sport <Enum> {
     ...
 }
 
+class Profile <Value Object> <<Embeddable>> {
+    picture: Picture
+    wlRatio: Float
+    statsPerMatch: List<Stats>
+    league: League
+}
+
+class League <Value Object> <<Embeddable>> {
+    name: String
+    division: Integer
+}
+
+class Picture <Value Object> <<Embeddable>> {
+    image: String
+    pWidth: Integer
+    pHeight: Integer
+    nrChannels: Integer
+}
+
+class AthleteProfile <Value Object> <<Embeddable>> {
+    nationality: Country
+    height: Float
+    weight: Float
+    age: Integer
+}
+
 '!include rich_types.puml
 
 Bet "1" --* "0..n" Customer
@@ -118,5 +146,9 @@ User "0..1" --> "1" PhoneNumber
 Athlete "0..1" -o "2..n" Team
 Stat "1" --* "1..n" Match
 Stat "1" --> "1" Bettable
+Profile "1" *-- "1" Picture
+Profile "1" -> "0..n" League
+Bettable "1" *- "1" Profile
+Athlete "1" *-- "1" AthleteProfile
 
 @enduml
