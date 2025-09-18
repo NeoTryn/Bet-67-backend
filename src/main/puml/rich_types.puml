@@ -25,11 +25,11 @@ class ArenaType <Rich Type> {
 }
 
 class Longitude <Rich Type> {
-    value: String
+    value: Float
 }
 
 class Latitude <Rich Type> {
-    value: String
+    value: Float
 }
 
 User --> UserName
